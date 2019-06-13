@@ -13,6 +13,9 @@ from selenium.common.exceptions import TimeoutException
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 import urllib3
+import colorama
+from colorama import init,Fore, Back, Style, AnsiToWin32
+import sys
 
 #Add option for headless browsing
 
@@ -25,11 +28,19 @@ options.add_argument("--headless")
 driver = webdriver.Firefox(options=options)
 driver.implicitly_wait(30)
 
+init(convert=True)
+init(wrap=False)
+
+stream = AnsiToWin32(sys.stderr).stream
+
 def startUp():
-    print("\n\t\t\t************************* WELCOME ****************************\n")
+    
+    print(Fore.GREEN+"\n\t\t\t************************* WELCOME ****************************\n"+Style.RESET_ALL)
+
     
 def getAppName():
-    tempAppName = input('\nEnter the app name: ' )
+    print(Fore.CYAN + 'blue text on stderr', file=stream)
+    tempAppName = input('Enter the app name: ' )
     #tempAppName = tempAppName.replace(" ","") #remove spaces from the input
     #can use strip() also
 
@@ -47,7 +58,7 @@ def getAppName():
    
 
 def searchConfirm():
-    searchConfirm = input("\nStart the searching ? (Y/N) :")
+    searchConfirm = input("\nStart the searching ?"+Fore.CYAN+" (Y/N) :"+Style.RESET_ALL)
     searchConfirm = searchConfirm.replace(" ","")
 
     if (searchConfirm == "Y") | (searchConfirm == "y") :
@@ -68,7 +79,7 @@ def searchingTheAppList():
    
     driver.get(url)
 
-    print("\n\t tittle: "+driver.title+" "+driver.current_url)
+    #print("\n\t tittle: "+driver.title+" "+driver.current_url)
 
     driver.find_element_by_id("gbqfq").send_keys(appName) #find the search box and fill the box with the app name
 
@@ -81,7 +92,7 @@ def searchingTheAppList():
     except (TimeoutException,NoSuchElementException) as e:
         print("\nElement not found " )
 
-        print("\n\t tittle: "+driver.title+" "+driver.current_url)
+        #print("\n\t tittle: "+driver.title+" "+driver.current_url)
 
         soup=BeautifulSoup(driver.page_source, 'lxml')
 
