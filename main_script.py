@@ -34,13 +34,16 @@ init(wrap=False)
 stream = AnsiToWin32(sys.stderr).stream
 
 def startUp():
-    
-    print(Fore.GREEN+"\n\t\t\t************************* WELCOME ****************************\n"+Style.RESET_ALL)
+
+    print(Fore.LIGHTCYAN_EX+"\n\t\t\t|                                                               |"+
+        "\n\t\t\t| ************************* WELCOME *************************** | "+
+            "\n\t\t\t| ______________________________________________________________|\n"+Style.RESET_ALL)
 
     
 def getAppName():
-    print(Fore.CYAN + 'blue text on stderr', file=stream)
-    tempAppName = input('Enter the app name: ' )
+
+    tempAppName = input('Enter the app name: ')
+
     #tempAppName = tempAppName.replace(" ","") #remove spaces from the input
     #can use strip() also
 
@@ -48,7 +51,8 @@ def getAppName():
 
     if not tempAppName:
         #input is empty
-        print("\nInvalid input! Please enter a valid input !")
+        print(Fore.RED + "\nInvalid input! Please enter a valid input !",file=stream)
+        print(Style.RESET_ALL)
         getAppName() #recall the method to get a valid input
        
     else:
@@ -58,11 +62,12 @@ def getAppName():
    
 
 def searchConfirm():
-    searchConfirm = input("\nStart the searching ?"+Fore.CYAN+" (Y/N) :"+Style.RESET_ALL)
+    searchConfirm = input("\nStart the searching (Y/N) :")
     searchConfirm = searchConfirm.replace(" ","")
 
     if (searchConfirm == "Y") | (searchConfirm == "y") :
-        print("\nSearching...")
+        print(Fore.LIGHTBLUE_EX+"\nSearching...",file=stream)
+        print(Style.RESET_ALL)
         #time.sleep(6)
         #searchingTheAppList()
         getData()
@@ -102,7 +107,8 @@ def searchingTheAppList():
             if(i < 10) :
                 appTitle = item.find("div",attrs={"class","b8cIId ReQCgd Q9MA7b"})
                 titleText = appTitle.get_text()
-                print("\t\t"+str(i+1)+" "+titleText)
+                print("\t\t"+Fore.GREEN+str(i+1)+" "+titleText,file=stream)
+                print(Style.RESET_ALL)
 
 
 def getData():
@@ -132,16 +138,18 @@ def getData():
 
             appDataLinkList.append(dataUrl)
 
-            print("\t "+str(i+1)+" "+titleText)
+            print("\t "+Fore.LIGHTCYAN_EX+"("+str(i+1)+")"+Fore.LIGHTWHITE_EX+" "+titleText,file=stream)
 
     validateTheSelectedIndex()
 
 def validateTheSelectedIndex () :
 
-    selectedIndex = input("\nEnter the index of the item you want to view : ")
+    print(Style.RESET_ALL)
+    selectedIndex = input("Enter the index of the item you want to view : ")
 
-    if(int(selectedIndex) < 1) | (int(selectedIndex) > 10):
-        print("Invalid index. Please enter a valid index.")
+    if(int(selectedIndex) < 1) | (int(selectedIndex) > 15):
+        print(Fore.RED+"Invalid index. Please enter a valid index.",file=stream)
+        print(Style.RESET_ALL)
         validateTheSelectedIndex()
     else:
         viewSelectedAppData(link = appDataLinkList[(int(selectedIndex)-1)])
@@ -165,28 +173,32 @@ def viewSelectedAppData(link):
     ratingTotal = soupSub.find("div",attrs={"class","BHMmbe"})
     ratingsList = soupSub.find_all("div",attrs={"class","mMF0fd"})
 
-    print("\n\t NAME : "+mainTitle.get_text())
-    print("\t DEVELOPED BY : "+developerName.get_text())
-    print("\t TOTAL DOWNLOADS : "+descripList[4].get_text())
-    print("\t VIEW IN PLAYSTORE : "+link)
+    print(Fore.LIGHTCYAN_EX+"\n   ___________________________________ ABOUT _________________________________ \n",file=stream)
+    print(Fore.LIGHTWHITE_EX+"\t NAME : "+Fore.LIGHTMAGENTA_EX+mainTitle.get_text(),file=stream)
+    print(Fore.LIGHTWHITE_EX+"\t DEVELOPED BY : "+Fore.LIGHTYELLOW_EX+developerName.get_text(),file=stream)
+    print(Fore.LIGHTWHITE_EX+"\t TOTAL DOWNLOADS : "+Fore.LIGHTRED_EX+descripList[4].get_text(),file=stream)
+    print(Fore.LIGHTWHITE_EX+"\t VIEW IN PLAYSTORE : "+Fore.LIGHTGREEN_EX+link,file=stream)
 
-    print("\n\t\t\t -------------- REVIEWS -------------- \n")
-    print("\t RATING : "+ratingTotal.get_text())
-    print("\t TOTAL REVIEWS : "+totalRatings.get_text()+"\n")
+    #Reviews section
+    print(Fore.LIGHTCYAN_EX+"\n   __________________________________ REVIEWS ________________________________ \n",file=stream)
+    print(Fore.LIGHTWHITE_EX+"\t RATING : "+Fore.LIGHTYELLOW_EX+ratingTotal.get_text(),file=stream)
+    print(Fore.LIGHTWHITE_EX+"\t TOTAL REVIEWS : "+Fore.LIGHTYELLOW_EX+totalRatings.get_text()+"\n",file=stream)
+
+    colorList = [Fore.LIGHTGREEN_EX,Fore.LIGHTYELLOW_EX,Fore.LIGHTMAGENTA_EX,Fore.LIGHTBLUE_EX,Fore.LIGHTRED_EX]
 
     for i,item in enumerate(ratingsList):
         rateNum = item.find("span",attrs={"class","Gn2mNd"}).get_text()
         rate = item.find("span",attrs={"class",spanClassList[i]})['style']
         updatedText = str(rate).replace("width:","")
 
-        print("\t\t"+rateNum+" --------"+updatedText)
+        print(colorList[i]+"\t\t"+rateNum+Fore.LIGHTWHITE_EX+" -------->"+colorList[i]+updatedText,file=stream)
 
-    print("\n\t\t\t ------------- DESCRIPTION -------------\n")
-
-    print("\t CURRENT VERSION : "+descripList[5].get_text())
-    print("\t SIZE : "+descripList[3].get_text())
-    print("\t TOTAL DOWNLOADS : "+descripList[4].get_text())
-    print("\t REQUIRES ANDROID : "+descripList[6].get_text())
+    #Description section
+    print(Fore.LIGHTCYAN_EX+"\n   ________________________________ DESCRIPTION _______________________________ \n",file=stream)
+    print(Fore.LIGHTWHITE_EX+"\t CURRENT VERSION : "+Fore.LIGHTBLACK_EX+descripList[5].get_text(),file=stream)
+    print(Fore.LIGHTWHITE_EX+"\t SIZE : "+Fore.LIGHTGREEN_EX+descripList[3].get_text(),file=stream)
+    print(Fore.LIGHTWHITE_EX+"\t TOTAL DOWNLOADS : "+Fore.LIGHTBLUE_EX+descripList[4].get_text(),file=stream)
+    print(Fore.LIGHTWHITE_EX+"\t REQUIRES ANDROID : "+Fore.LIGHTRED_EX+descripList[6].get_text(),file=stream)
 
 
 startUp()
