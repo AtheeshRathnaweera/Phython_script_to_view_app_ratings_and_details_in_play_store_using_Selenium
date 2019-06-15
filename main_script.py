@@ -16,6 +16,8 @@ import urllib3
 import colorama
 from colorama import init,Fore, Back, Style, AnsiToWin32
 import sys
+import textwrap
+
 
 #Add option for headless browsing
 
@@ -37,12 +39,12 @@ def startUp():
 
     print(Fore.LIGHTCYAN_EX+"\n\t\t\t|                                                               |"+
         "\n\t\t\t| ************************* WELCOME *************************** | "+
-            "\n\t\t\t| ______________________________________________________________|\n"+Style.RESET_ALL)
+            "\n\t\t\t| ______________________________________________________________|\n\n"+Style.RESET_ALL)
 
     
 def getAppName():
 
-    tempAppName = input('Enter the app name: ')
+    tempAppName = input(' Enter the app name: ')
 
     #tempAppName = tempAppName.replace(" ","") #remove spaces from the input
     #can use strip() also
@@ -51,7 +53,7 @@ def getAppName():
 
     if not tempAppName:
         #input is empty
-        print(Fore.RED + "\nInvalid input! Please enter a valid input !",file=stream)
+        print(Fore.RED + "\n Invalid input! Please enter a valid input !",file=stream)
         print(Style.RESET_ALL)
         getAppName() #recall the method to get a valid input
        
@@ -62,11 +64,11 @@ def getAppName():
    
 
 def searchConfirm():
-    searchConfirm = input("\nStart the searching (Y/N) :")
+    searchConfirm = input("\n Start the searching ? (Y/N) :")
     searchConfirm = searchConfirm.replace(" ","")
 
     if (searchConfirm == "Y") | (searchConfirm == "y") :
-        print(Fore.LIGHTBLUE_EX+"\nSearching...",file=stream)
+        print(Fore.LIGHTBLUE_EX+"\n Searching...",file=stream)
         print(Style.RESET_ALL)
         #time.sleep(6)
         #searchingTheAppList()
@@ -138,22 +140,27 @@ def getData():
 
             appDataLinkList.append(dataUrl)
 
-            print("\t "+Fore.LIGHTCYAN_EX+"("+str(i+1)+")"+Fore.LIGHTWHITE_EX+" "+titleText,file=stream)
+            print("\t  "+Fore.LIGHTCYAN_EX+"("+str(i+1)+")"+Fore.LIGHTWHITE_EX+" "+titleText,file=stream)
 
     validateTheSelectedIndex()
 
 def validateTheSelectedIndex () :
 
     print(Style.RESET_ALL)
-    selectedIndex = input("Enter the index of the item you want to view : ")
+    selectedIndex = input(" Enter the index of the item you want to view : ")
 
-    if(int(selectedIndex) < 1) | (int(selectedIndex) > 15):
-        print(Fore.RED+"Invalid index. Please enter a valid index.",file=stream)
+    try:
+        if(int(selectedIndex) < 1) | (int(selectedIndex) > 15):
+            print(Fore.RED+" Invalid index. Please enter a valid index.",file=stream)
+            print(Style.RESET_ALL)
+            validateTheSelectedIndex()
+        else:
+            viewSelectedAppData(link = appDataLinkList[(int(selectedIndex)-1)])
+
+    except:
+        print(Fore.RED+" Invalid index. Please enter a valid index.",file=stream)
         print(Style.RESET_ALL)
         validateTheSelectedIndex()
-    else:
-        viewSelectedAppData(link = appDataLinkList[(int(selectedIndex)-1)])
-
 
 def viewSelectedAppData(link):
 
@@ -173,16 +180,16 @@ def viewSelectedAppData(link):
     ratingTotal = soupSub.find("div",attrs={"class","BHMmbe"})
     ratingsList = soupSub.find_all("div",attrs={"class","mMF0fd"})
 
-    print(Fore.LIGHTCYAN_EX+"\n   ___________________________________ ABOUT _________________________________ \n",file=stream)
-    print(Fore.LIGHTWHITE_EX+"\t NAME : "+Fore.LIGHTMAGENTA_EX+mainTitle.get_text(),file=stream)
-    print(Fore.LIGHTWHITE_EX+"\t DEVELOPED BY : "+Fore.LIGHTYELLOW_EX+developerName.get_text(),file=stream)
-    print(Fore.LIGHTWHITE_EX+"\t TOTAL DOWNLOADS : "+Fore.LIGHTRED_EX+descripList[4].get_text(),file=stream)
-    print(Fore.LIGHTWHITE_EX+"\t VIEW IN PLAYSTORE : "+Fore.LIGHTGREEN_EX+link,file=stream)
+    print(Fore.LIGHTCYAN_EX+"\n\t _________________________________________ ABOUT _______________________________________ \n\n",file=stream)
+    print(Fore.LIGHTWHITE_EX+"\t  NAME : "+Fore.LIGHTMAGENTA_EX+mainTitle.get_text(),file=stream)
+    print(Fore.LIGHTWHITE_EX+"\t  DEVELOPED BY : "+Fore.LIGHTYELLOW_EX+developerName.get_text(),file=stream)
+    print(Fore.LIGHTWHITE_EX+"\t  TOTAL DOWNLOADS : "+Fore.LIGHTRED_EX+descripList[4].get_text(),file=stream)
+    print(Fore.LIGHTWHITE_EX+"\t  VIEW IN PLAYSTORE : "+Fore.LIGHTGREEN_EX+link,file=stream)
 
     #Reviews section
-    print(Fore.LIGHTCYAN_EX+"\n   __________________________________ REVIEWS ________________________________ \n",file=stream)
-    print(Fore.LIGHTWHITE_EX+"\t RATING : "+Fore.LIGHTYELLOW_EX+ratingTotal.get_text(),file=stream)
-    print(Fore.LIGHTWHITE_EX+"\t TOTAL REVIEWS : "+Fore.LIGHTYELLOW_EX+totalRatings.get_text()+"\n",file=stream)
+    print(Fore.LIGHTCYAN_EX+"\n\t ________________________________________ REVIEWS ______________________________________ \n\n",file=stream)
+    print(Fore.LIGHTWHITE_EX+"\t  RATING : "+Fore.LIGHTYELLOW_EX+ratingTotal.get_text(),file=stream)
+    print(Fore.LIGHTWHITE_EX+"\t  TOTAL REVIEWS : "+Fore.LIGHTYELLOW_EX+totalRatings.get_text()+"\n",file=stream)
 
     colorList = [Fore.LIGHTGREEN_EX,Fore.LIGHTYELLOW_EX,Fore.LIGHTMAGENTA_EX,Fore.LIGHTBLUE_EX,Fore.LIGHTRED_EX]
 
@@ -191,15 +198,38 @@ def viewSelectedAppData(link):
         rate = item.find("span",attrs={"class",spanClassList[i]})['style']
         updatedText = str(rate).replace("width:","")
 
-        print(colorList[i]+"\t\t"+rateNum+Fore.LIGHTWHITE_EX+" -------->"+colorList[i]+updatedText,file=stream)
+        print(colorList[i]+"\t\t   "+rateNum+Fore.LIGHTWHITE_EX+" -------->"+colorList[i]+updatedText,file=stream)
 
     #Description section
-    print(Fore.LIGHTCYAN_EX+"\n   ________________________________ DESCRIPTION _______________________________ \n",file=stream)
-    print(Fore.LIGHTWHITE_EX+"\t CURRENT VERSION : "+Fore.LIGHTBLACK_EX+descripList[5].get_text(),file=stream)
-    print(Fore.LIGHTWHITE_EX+"\t SIZE : "+Fore.LIGHTGREEN_EX+descripList[3].get_text(),file=stream)
-    print(Fore.LIGHTWHITE_EX+"\t TOTAL DOWNLOADS : "+Fore.LIGHTBLUE_EX+descripList[4].get_text(),file=stream)
-    print(Fore.LIGHTWHITE_EX+"\t REQUIRES ANDROID : "+Fore.LIGHTRED_EX+descripList[6].get_text(),file=stream)
+    print(Fore.LIGHTCYAN_EX+"\n\t ______________________________________ DESCRIPTION _____________________________________ \n\n",file=stream)
+    print(Fore.LIGHTWHITE_EX+"\t  CURRENT VERSION : "+Fore.LIGHTBLACK_EX+descripList[5].get_text(),file=stream)
+    print(Fore.LIGHTWHITE_EX+"\t  SIZE : "+Fore.LIGHTGREEN_EX+descripList[3].get_text(),file=stream)
+    print(Fore.LIGHTWHITE_EX+"\t  TOTAL DOWNLOADS : "+Fore.LIGHTBLUE_EX+descripList[4].get_text(),file=stream)
+    print(Fore.LIGHTWHITE_EX+"\t  REQUIRES ANDROID : "+Fore.LIGHTRED_EX+descripList[6].get_text(),file=stream)
 
+    #Find the top comments
+    print(Fore.LIGHTCYAN_EX+"\n\t ______________________________________ TOP COMMENTS _____________________________________ \n\n",file=stream)
 
+    commentsSections = soupSub.find_all("div",attrs={"class","d15Mdf bAhLNe"})
+
+    for i,item in enumerate(commentsSections):
+        commentatorName = item.find("span",attrs={"class","X43Kjb"})
+        commentedDate = item.find("span",attrs={"class","p2TkOb"})
+        comment = item.find("div",attrs={"class","UD7Dzf"})
+
+        print("\t "+Fore.WHITE+str(i+1)+") "+Fore.GREEN+commentatorName.get_text()+"\n\t    "+Fore.CYAN+commentedDate.get_text())
+
+        commentText = comment.get_text()
+
+        splitetdText = commentText.split("...Full Review",1)[1]#splitting text from "...Full Review" to avoid repeating text
+
+        dedented_text = textwrap.dedent(str(splitetdText)).strip()
+        formatted_para = textwrap.fill(dedented_text, width=90)
+        print("\n "+Fore.LIGHTWHITE_EX+textwrap.indent(formatted_para,"\t    ")+"\n")
+
+    
+    driver.quit()
+        
 startUp()
 getAppName()
+ 
